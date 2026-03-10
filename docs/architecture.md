@@ -5,7 +5,7 @@
 - Backend Spring Boot en `backend/` (puerto 3001).
 - n8n en `http://localhost:5678` con webhook `POST /webhook/weather`.
 - MCP Server Node.js en `mcp-server/` (puerto 4000) con herramientas para clima y recomendacion.
-- MySQL con base `climastyle_db` y tabla `weather_queries`.
+- MySQL con base `weatherdb` y tabla `weather_queries`.
 
 ## Flujo
 1. Usuario ingresa ciudad en el frontend.

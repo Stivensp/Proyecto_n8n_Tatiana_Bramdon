@@ -1,71 +1,93 @@
 {
-  "name": "climastyle-weather",
+  "name": "ClimaStyle",
   "nodes": [
     {
       "parameters": {
-        "path": "weather",
         "httpMethod": "POST",
-        "responseMode": "lastNode",
+        "path": "weather",
+        "responseMode": "responseNode",
         "options": {}
       },
-      "id": "Webhook",
-      "name": "Webhook",
+      "id": "e4c05d18-87a9-4edd-b9b5-8e9515f32dbd",
+      "name": "Webhook1",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        -600,
-        200
+        3184,
+        16
+      ],
+      "webhookId": "17ed432a-12f1-44fc-aafd-bd0212b044ec"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "city",
+              "value": "={{$json.body.city}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e2ba8b72-864a-4c44-b01a-345e3c724e2a",
+      "name": "Set City1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        3392,
+        16
       ]
     },
     {
       "parameters": {
         "url": "https://geocoding-api.open-meteo.com/v1/search",
-        "method": "GET",
-        "responseFormat": "json",
-        "queryParametersUi": {
-          "parameter": [
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
             {
               "name": "name",
-              "value": "={{$json[\"city\"]}}"
-            },
-            {
-              "name": "count",
-              "value": "1"
-            },
-            {
-              "name": "language",
-              "value": "es"
-            },
-            {
-              "name": "format",
-              "value": "json"
+              "value": "={{ $json.city }}"
             }
           ]
-        }
+        },
+        "options": {}
       },
-      "id": "Geocoding",
-      "name": "Geocoding",
+      "id": "c1e6acd4-7e4b-4502-bd25-4c3c7126fb53",
+      "name": "Geocode City1",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        -350,
-        200
+        3584,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $json.results[0];\nreturn [{ json: { city: result.name, latitude: result.latitude, longitude: result.longitude } }];"
+      },
+      "id": "dc8ee66e-2aaa-4c47-8741-a4761f39998c",
+      "name": "Extract Coordinates1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3792,
+        16
       ]
     },
     {
       "parameters": {
         "url": "https://api.open-meteo.com/v1/forecast",
-        "method": "GET",
-        "responseFormat": "json",
-        "queryParametersUi": {
-          "parameter": [
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
             {
               "name": "latitude",
-              "value": "={{$json[\"results\"][0][\"latitude\"]}}"
+              "value": "={{ $json.latitude }}"
             },
             {
               "name": "longitude",
-              "value": "={{$json[\"results\"][0][\"longitude\"]}}"
+              "value": "={{ $json.longitude }}"
             },
             {
               "name": "current",
@@ -76,138 +98,251 @@
               "value": "auto"
             }
           ]
-        }
+        },
+        "options": {}
       },
-      "id": "Weather",
-      "name": "Weather",
+      "id": "f26e3725-d5b2-47d6-966d-60ffa28388b2",
+      "name": "Get Weather1",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        -80,
-        200
+        3984,
+        16
       ]
     },
     {
       "parameters": {
-        "jsCode": "const city = $items(\"Geocoding\")[0].json.results?.[0]?.name || $json.city;\nconst temperature = $items(\"Weather\")[0].json.current?.temperature_2m;\nconst weatherCode = $items(\"Weather\")[0].json.current?.weather_code;\n\nfunction mapWeatherCode(code) {\n  if (code === 0) return \"despejado\";\n  if (code >= 1 && code <= 3) return \"parcialmente nublado\";\n  if (code === 45 || code === 48) return \"niebla\";\n  if (code >= 51 && code <= 57) return \"llovizna\";\n  if (code >= 61 && code <= 67) return \"lluvia\";\n  if (code >= 71 && code <= 77) return \"nieve\";\n  if (code >= 80 && code <= 82) return \"chubascos\";\n  if (code >= 85 && code <= 86) return \"nevadas\";\n  if (code >= 95 && code <= 99) return \"tormenta\";\n  return \"condicion desconocida\";\n}\n\nconst condition = mapWeatherCode(weatherCode);\nlet recommendation = \"\";\nif (temperature < 10) {\n  recommendation = \"abrigo grueso\";\n} else if (temperature >= 10 && temperature <= 17) {\n  recommendation = \"chaqueta ligera\";\n} else if (temperature >= 18 && temperature <= 25) {\n  recommendation = \"ropa comoda\";\n} else {\n  recommendation = \"ropa ligera\";\n}\n\nif ((condition || \"\").toLowerCase().includes(\"lluvia\")) {\n  recommendation += \" y paraguas\";\n}\n\nreturn [{ json: { city, temperature, condition, recommendation } }];"
+        "jsCode": "const current = $json.current;\n\nconst temperature = current.temperature_2m;\nconst humidity = current.relative_humidity_2m;\nconst code = current.weather_code;\n\nconst city = $items(\"Extract Coordinates1\")[0].json.city;\n\nlet condition = \"Desconocido\";\nlet recommendation = \"\";\n\nif (code === 0) {\n  condition = \"Cielo despejado\";\n  recommendation = \"Buen día para ropa ligera.\";\n}\n\nelse if (code >= 1 && code <= 3) {\n  condition = \"Parcialmente nublado\";\n  recommendation = \"Podrías llevar una chaqueta ligera.\";\n}\n\nelse if (code >= 45 && code <= 48) {\n  condition = \"Niebla\";\n  recommendation = \"Lleva abrigo y conduce con cuidado.\";\n}\n\nelse if (code >= 51 && code <= 67) {\n  condition = \"Lluvia ligera\";\n  recommendation = \"Lleva paraguas o impermeable.\";\n}\n\nelse if (code >= 71 && code <= 77) {\n  condition = \"Nieve\";\n  recommendation = \"Usa ropa térmica.\";\n}\n\nelse if (code >= 80 && code <= 82) {\n  condition = \"Chubascos\";\n  recommendation = \"Podría llover, lleva paraguas.\";\n}\n\nelse if (code >= 95) {\n  condition = \"Tormenta eléctrica\";\n  recommendation = \"Evita salir si no es necesario y si sales lleva impermeable.\";\n}\n\nreturn [\n  {\n    json: {\n      city: city,\n      temperature: temperature,\n      condition: condition,\n      recommendation: recommendation\n    }\n  }\n];"
       },
-      "id": "Recommend",
-      "name": "Recommend",
+      "id": "c734bd76-76c3-4c12-b2d2-ab801d6eee3d",
+      "name": "Prepare Weather Data1",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        200,
-        200
+        4192,
+        16
       ]
     },
     {
       "parameters": {
-        "operation": "insert",
-        "table": "weather_queries",
-        "columns": [
-          "city",
-          "temperature",
-          "weather_condition",
-          "recommendation"
-        ],
-        "values": [
-          "={{$json[\"city\"]}}",
-          "={{$json[\"temperature\"]}}",
-          "={{$json[\"condition\"]}}",
-          "={{$json[\"recommendation\"]}}"
-        ]
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=En un mensaje corto recomienda ropa según el clima, se amigable y divertido.\n\nCiudad: {{$json.city}}\nTemperatura: {{$json.temperature}}°C\nCondición: {{$json.condition}}\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
       },
-      "id": "MySQL",
-      "name": "MySQL",
-      "type": "n8n-nodes-base.mySql",
-      "typeVersion": 2,
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
       "position": [
-        450,
-        200
+        4400,
+        16
       ],
+      "id": "bc69de8e-f36d-403f-894d-d90fc84c8296",
+      "name": "Message a model1",
       "credentials": {
-        "mySql": {
-          "id": "REPLACE_WITH_CREDENTIAL_ID",
-          "name": "MySQL"
+        "googlePalmApi": {
+          "id": "PApFCY9rYKZ6Vh8l",
+          "name": "Google Gemini(PaLM) Api account"
         }
       }
     },
     {
       "parameters": {
-        "responseData": "={{$json}}",
-        "responseCode": 200
+        "jsCode": "const rec =\n$json.candidates?.[0]?.content?.parts?.[0]?.text ||\n$json.content?.parts?.[0]?.text ||\n$json.text ||\n\"Sin recomendación\";\n\nconst data = $items('Prepare Weather Data1')[0].json;\n\nreturn [{\n  json: {\n    city: data.city,\n    temperature: data.temperature,\n    condition: data.condition,\n    recommendation: rec\n  }\n}];"
       },
-      "id": "Respond",
-      "name": "Respond to Webhook",
+      "id": "c911b62c-ce0f-4cbc-a99e-5d4995fc1a86",
+      "name": "Format Response1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4784,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "weather_queries",
+          "mode": "list",
+          "cachedResultName": "weather_queries"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "city",
+              "value": "={{ $json.city }}"
+            },
+            {
+              "column": "temperature",
+              "value": "={{ $json.temperature }}"
+            },
+            {
+              "column": "condition",
+              "value": "={{ $json.condition }}"
+            },
+            {
+              "column": "recommendation",
+              "value": "={{ $json.recommendation }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2d6a6663-df46-42c7-a5e8-84af1bc04e3d",
+      "name": "Insert History1",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2,
+      "position": [
+        5024,
+        96
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "6ecnfs6z2hMkVcsu",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}",
+        "options": {}
+      },
+      "id": "6d932e01-0f48-4289-bcbd-79192d7d22b9",
+      "name": "Respond1",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        700,
-        200
+        5024,
+        -128
       ]
     }
   ],
+  "pinData": {},
   "connections": {
-    "Webhook": {
+    "Webhook1": {
       "main": [
         [
           {
-            "node": "Geocoding",
+            "node": "Set City1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Geocoding": {
+    "Set City1": {
       "main": [
         [
           {
-            "node": "Weather",
+            "node": "Geocode City1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Weather": {
+    "Geocode City1": {
       "main": [
         [
           {
-            "node": "Recommend",
+            "node": "Extract Coordinates1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Recommend": {
+    "Extract Coordinates1": {
       "main": [
         [
           {
-            "node": "MySQL",
+            "node": "Get Weather1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "MySQL": {
+    "Get Weather1": {
       "main": [
         [
           {
-            "node": "Respond to Webhook",
+            "node": "Prepare Weather Data1",
             "type": "main",
             "index": 0
           }
         ]
+      ]
+    },
+    "Prepare Weather Data1": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Format Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response1": {
+      "main": [
+        [
+          {
+            "node": "Insert History1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert History1": {
+      "main": [
+        []
       ]
     }
   },
   "active": false,
-  "settings": {},
-  "versionId": "1",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6b9e0e0b-00d5-4406-9a30-98187168a6f0",
   "meta": {
-    "instanceId": "climastyle"
-  }
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e83248905f3deecb760e6a1e4226f3c6bf13385580086207435a3ebd79a87e29"
+  },
+  "id": "M8ZysVCX0FVSKpAD",
+  "tags": []
 }

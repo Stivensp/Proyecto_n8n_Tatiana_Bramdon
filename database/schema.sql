@@ -1,6 +1,6 @@
-CREATE DATABASE climastyle_db;
+CREATE DATABASE weatherdb;
 
-USE climastyle_db;
+USE weatherdb;
 
 CREATE TABLE weather_queries (
   id INT AUTO_INCREMENT PRIMARY KEY,
