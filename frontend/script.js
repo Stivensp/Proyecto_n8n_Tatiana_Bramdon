@@ -1,4 +1,4 @@
-async function consultWeather() {
+ï»¿async function consultWeather() {
 
     const city = document.getElementById("cityInput").value;
   
@@ -19,15 +19,15 @@ async function consultWeather() {
   
       const data = await response.json();
   
-      document.getElementById("city").textContent = data.city;
+      const payload = Array.isArray(data) ? data[0] : data;
+      document.getElementById("city").textContent = payload.city || "-";
       document.getElementById("temperature").textContent =
-        "Temperatura: " + data.temperature + "°C";
-  
-      document.getElementById("condition").textContent =
-        "Condición: " + data.condition;
-  
+        payload.temperature !== null && payload.temperature !== undefined
+          ? payload.temperature + "Â°C"
+          : "-";
+      document.getElementById("condition").textContent = payload.condition || "-";
       document.getElementById("recommendation").textContent =
-        "Recomendación: " + data.recommendation;
+        payload.recommendation || "-";
   
       document.getElementById("result").classList.remove("hidden");
   
