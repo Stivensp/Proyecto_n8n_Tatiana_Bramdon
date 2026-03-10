@@ -1,2 +1,5 @@
 # Secrets / local config
 backend/src/main/resources/application.yml
+
+# Build outputs
+backend/target/
