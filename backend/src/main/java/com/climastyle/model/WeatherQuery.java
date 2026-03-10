@@ -24,7 +24,7 @@ public class WeatherQuery {
   @Column(precision = 5, scale = 2)
   private BigDecimal temperature;
 
-  @Column(name = "weather_condition", length = 100)
+  @Column(name = "`condition`", length = 100)
   private String weatherCondition;
 
   @Column(columnDefinition = "TEXT")
