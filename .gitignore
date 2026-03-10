@@ -1,5 +1,8 @@
-# Secrets / local config
+﻿# Secrets / local config
 backend/src/main/resources/application.yml
 
 # Build outputs
 backend/target/
+
+# Editor settings
+.vscode/
