@@ -21,13 +21,13 @@ async function consultWeather() {
   
       document.getElementById("city").textContent = data.city;
       document.getElementById("temperature").textContent =
-        "Temperatura: " + data.temperature + "Â°C";
+        "Temperatura: " + data.temperature + "°C";
   
       document.getElementById("condition").textContent =
-        "CondiciÃ³n: " + data.condition;
+        "Condición: " + data.condition;
   
       document.getElementById("recommendation").textContent =
-        "RecomendaciÃ³n: " + data.recommendation;
+        "Recomendación: " + data.recommendation;
   
       document.getElementById("result").classList.remove("hidden");
   
