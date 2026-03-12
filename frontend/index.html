@@ -1,49 +1,172 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Asistente de vestimenta por clima</title>
-  <link rel="stylesheet" href="styles.css">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Asistente de vestimenta por clima</title>
+
+<link rel="stylesheet" href="styles.css">
+
+<!-- ICONOS -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
+
 <body>
 
-  <div class="container">
-    <h1>Asistente de vestimenta por clima</h1>
-    <p class="subtitle">Consulta rápida con respuesta JSON completa</p>
+<div class="container">
 
-    <div class="form">
-      <input 
-        type="text"
-        id="cityInput"
-        placeholder="Escribe una ciudad"
-      >
-      <button onclick="consultWeather()">Consultar</button>
-    </div>
+<!-- HEADER -->
 
-    <div id="result" class="result hidden">
-      <div class="grid">
-        <div class="item">
-          <span class="label">Ciudad</span>
-          <span id="city" class="value"></span>
-        </div>
-        <div class="item">
-          <span class="label">Temperatura</span>
-          <span id="temperature" class="value"></span>
-        </div>
-        <div class="item">
-          <span class="label">Condición</span>
-          <span id="condition" class="value"></span>
-        </div>
-      </div>
-      <div class="item full">
-        <span class="label">Recomendación</span>
-        <p id="recommendation" class="recommendation"></p>
-      </div>
-    </div>
+<div class="header">
 
-  </div>
+<h1>🌤 Asistente de Vestimenta por Clima</h1>
 
-  <script src="script.js"></script>
+<p class="subtitle">
+Consulta el clima de cualquier ciudad y recibe recomendaciones de ropa según la temperatura y las condiciones meteorológicas.
+</p>
+
+<div class="form">
+
+<input
+type="text"
+id="cityInput"
+placeholder="Ejemplo: Bogotá, Madrid, Lima"
+>
+
+<button onclick="consultWeather()">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+Consultar clima
+
+</button>
+
+</div>
+
+</div>
+
+<!-- LOADER -->
+
+<div id="loader" class="loader hidden">
+
+<i class="fa-solid fa-spinner fa-spin"></i>
+Consultando clima...
+
+</div>
+
+<!-- ERROR -->
+
+<div id="error" class="error hidden"></div>
+
+<!-- RESULTADOS -->
+
+<div id="result" class="result hidden">
+
+<div class="main-grid">
+
+<!-- CLIMA PRINCIPAL -->
+
+<div class="card">
+
+<div class="weather-main">
+
+<div>
+
+<div id="city" class="temperature">
+Ciudad
+</div>
+
+<div id="condition" class="condition">
+Condición
+</div>
+
+<div id="temperature" class="temperature">
+--°C
+</div>
+
+</div>
+
+<div class="weather-icon">
+<i id="icon" class="fa-solid fa-cloud"></i>
+</div>
+
+</div>
+
+<!-- DETALLES -->
+
+<div class="details">
+
+<div class="detail">
+
+<span>Humedad</span>
+
+<strong id="humidity">--%</strong>
+
+</div>
+
+<div class="detail">
+
+<span>Viento</span>
+
+<strong id="wind">-- km/h</strong>
+
+</div>
+
+<div class="detail">
+
+<span>Sensación</span>
+
+<strong id="feelslike">--°C</strong>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- RECOMENDACION -->
+
+<div class="card">
+
+<h3>👕 Recomendación de vestimenta</h3>
+
+<p id="recommendation" class="recommendation">
+
+Aquí aparecerá la recomendación de ropa según el clima.
+
+</p>
+
+</div>
+
+</div>
+
+<!-- HISTORIAL -->
+
+<div class="card">
+
+<h3>🕓 Historial de consultas</h3>
+
+<div id="history" class="history">
+
+<div class="history-item">
+<span>Bogotá</span>
+<span>15°C</span>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="script.js"></script>
 
 </body>
+
 </html>
