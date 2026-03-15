@@ -1,4 +1,4 @@
-{
+ï»¿{
   "name": "ClimaStyle",
   "nodes": [
     {
@@ -8,36 +8,15 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "e4c05d18-87a9-4edd-b9b5-8e9515f32dbd",
-      "name": "Webhook1",
+      "id": "924382c9-1ff3-4b15-911c-1ef05ee02295",
+      "name": "Inicio",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        3184,
-        16
+        -1840,
+        144
       ],
       "webhookId": "17ed432a-12f1-44fc-aafd-bd0212b044ec"
-    },
-    {
-      "parameters": {
-        "values": {
-          "string": [
-            {
-              "name": "city",
-              "value": "={{$json.body.city}}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "e2ba8b72-864a-4c44-b01a-345e3c724e2a",
-      "name": "Set City1",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
-      "position": [
-        3392,
-        16
-      ]
     },
     {
       "parameters": {
@@ -53,26 +32,26 @@
         },
         "options": {}
       },
-      "id": "c1e6acd4-7e4b-4502-bd25-4c3c7126fb53",
-      "name": "Geocode City1",
+      "id": "beaaba27-a171-447a-abcf-7e4d29006098",
+      "name": "Buscar datos",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        3584,
-        16
+        -1440,
+        144
       ]
     },
     {
       "parameters": {
         "jsCode": "const result = $json.results[0];\nreturn [{ json: { city: result.name, latitude: result.latitude, longitude: result.longitude } }];"
       },
-      "id": "dc8ee66e-2aaa-4c47-8741-a4761f39998c",
-      "name": "Extract Coordinates1",
+      "id": "78a9e7e2-6de2-4503-917b-685d2635c8b8",
+      "name": "Extraer coordenadas",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3792,
-        16
+        -1232,
+        144
       ]
     },
     {
@@ -91,7 +70,7 @@
             },
             {
               "name": "current",
-              "value": "temperature_2m,relative_humidity_2m,weather_code"
+              "value": "temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,weather_code"
             },
             {
               "name": "timezone",
@@ -101,26 +80,47 @@
         },
         "options": {}
       },
-      "id": "f26e3725-d5b2-47d6-966d-60ffa28388b2",
-      "name": "Get Weather1",
+      "id": "60072354-607b-4e47-be50-ce51ede0fd2d",
+      "name": "Extraer datos de ciudad",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        3984,
-        16
+        -1040,
+        144
       ]
     },
     {
       "parameters": {
-        "jsCode": "const current = $json.current;\n\nconst temperature = current.temperature_2m;\nconst humidity = current.relative_humidity_2m;\nconst code = current.weather_code;\n\nconst city = $items(\"Extract Coordinates1\")[0].json.city;\n\nlet condition = \"Desconocido\";\nlet recommendation = \"\";\n\nif (code === 0) {\n  condition = \"Cielo despejado\";\n  recommendation = \"Buen día para ropa ligera.\";\n}\n\nelse if (code >= 1 && code <= 3) {\n  condition = \"Parcialmente nublado\";\n  recommendation = \"Podrías llevar una chaqueta ligera.\";\n}\n\nelse if (code >= 45 && code <= 48) {\n  condition = \"Niebla\";\n  recommendation = \"Lleva abrigo y conduce con cuidado.\";\n}\n\nelse if (code >= 51 && code <= 67) {\n  condition = \"Lluvia ligera\";\n  recommendation = \"Lleva paraguas o impermeable.\";\n}\n\nelse if (code >= 71 && code <= 77) {\n  condition = \"Nieve\";\n  recommendation = \"Usa ropa térmica.\";\n}\n\nelse if (code >= 80 && code <= 82) {\n  condition = \"Chubascos\";\n  recommendation = \"Podría llover, lleva paraguas.\";\n}\n\nelse if (code >= 95) {\n  condition = \"Tormenta eléctrica\";\n  recommendation = \"Evita salir si no es necesario y si sales lleva impermeable.\";\n}\n\nreturn [\n  {\n    json: {\n      city: city,\n      temperature: temperature,\n      condition: condition,\n      recommendation: recommendation\n    }\n  }\n];"
+        "values": {
+          "string": [
+            {
+              "name": "city",
+              "value": "={{$json.body.city}}"
+            }
+          ]
+        },
+        "options": {}
       },
-      "id": "c734bd76-76c3-4c12-b2d2-ab801d6eee3d",
-      "name": "Prepare Weather Data1",
+      "id": "aa93c74f-8268-46ef-84d0-a8715d828e0b",
+      "name": "Ciudad",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -1632,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const current = $json.current;\n\nconst temperature = current.temperature_2m;\nconst humidity = current.relative_humidity_2m;\nconst wind = current.wind_speed_10m;\nconst feelsLike = current.apparent_temperature;\nconst code = current.weather_code;\n\nconst city = $items(\"Extraer coordenadas\")[0].json.city;\n\nlet condition = \"Desconocido\";\nlet recommendation = \"\";\n\n// CondiciÃ³n del clima\nif (code === 0) {\n  condition = \"Cielo despejado\";\n}\nelse if (code >= 1 && code <= 3) {\n  condition = \"Parcialmente nublado\";\n}\nelse if (code >= 45 && code <= 48) {\n  condition = \"Niebla\";\n}\nelse if (code >= 51 && code <= 67) {\n  condition = \"Lluvia ligera\";\n}\nelse if (code >= 71 && code <= 77) {\n  condition = \"Nieve\";\n}\nelse if (code >= 80 && code <= 82) {\n  condition = \"Chubascos\";\n}\nelse if (code >= 95) {\n  condition = \"Tormenta elÃ©ctrica\";\n}\n\n// RecomendaciÃ³n basada en sensaciÃ³n tÃ©rmica\nif (feelsLike >= 30) {\n  recommendation = \"Hace bastante calor. Usa ropa ligera y mantente hidratado.\";\n}\nelse if (feelsLike >= 24) {\n  recommendation = \"Clima cÃ¡lido. Ropa fresca es recomendable.\";\n}\nelse if (feelsLike >= 18) {\n  recommendation = \"Temperatura agradable.\";\n}\nelse {\n  recommendation = \"PodrÃ­as necesitar una chaqueta ligera.\";\n}\n\n// Ajuste si llueve\nif (code >= 51 && code <= 82) {\n  recommendation += \" TambiÃ©n es recomendable llevar paraguas.\";\n}\n\nreturn [\n  {\n    json: {\n      city: city,\n      temperature: temperature,\n      humidity: humidity,\n      wind: wind,\n      feels_like: feelsLike,\n      condition: condition,\n      recommendation: recommendation\n    }\n  }\n];"
+      },
+      "id": "fadf547d-e085-4979-b3b2-8888501f6153",
+      "name": "Extraer datos especificos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4192,
-        16
+        -832,
+        144
       ]
     },
     {
@@ -134,7 +134,7 @@
         "messages": {
           "values": [
             {
-              "content": "=En un mensaje corto recomienda ropa según el clima, se amigable y divertido.\n\nCiudad: {{$json.city}}\nTemperatura: {{$json.temperature}}°C\nCondición: {{$json.condition}}\n"
+              "content": "=En un mensaje corto recomienda ropa segÃºn el clima. SÃ© amigable, divertido y claro.\n\nCiudad: {{$json.city}}\nTemperatura: {{$json.temperature}}Â°C\nSensaciÃ³n tÃ©rmica: {{$json.feels_like}}Â°C\nHumedad: {{$json.humidity}}%\nViento: {{$json.wind}} km/h\nCondiciÃ³n del clima: {{$json.condition}}\n"
             }
           ]
         },
@@ -144,29 +144,44 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        4400,
-        16
+        -624,
+        144
       ],
-      "id": "bc69de8e-f36d-403f-894d-d90fc84c8296",
-      "name": "Message a model1",
+      "id": "85628ca2-de83-4783-bbde-725ba1c0ef59",
+      "name": "Mensaje",
       "credentials": {
         "googlePalmApi": {
-          "id": "PApFCY9rYKZ6Vh8l",
+          "id": "TGHp0xt6ggmaPb6t",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "const rec =\n$json.candidates?.[0]?.content?.parts?.[0]?.text ||\n$json.content?.parts?.[0]?.text ||\n$json.text ||\n\"Sin recomendación\";\n\nconst data = $items('Prepare Weather Data1')[0].json;\n\nreturn [{\n  json: {\n    city: data.city,\n    temperature: data.temperature,\n    condition: data.condition,\n    recommendation: rec\n  }\n}];"
+        "jsCode": "const rec =\n$json.candidates?.[0]?.content?.parts?.[0]?.text ||\n$json.content?.parts?.[0]?.text ||\n$json.text ||\n\"Sin recomendaciÃ³n\";\n\nconst data = $items('Extraer datos especificos')[0].json;\n\nreturn [{\n  json: {\n    city: data.city,\n    temperature: data.temperature,\n    feels_like: data.feels_like,\n    humidity: data.humidity,\n    wind: data.wind,\n    condition: data.condition,\n    recommendation: rec\n  }\n}];"
       },
-      "id": "c911b62c-ce0f-4cbc-a99e-5d4995fc1a86",
-      "name": "Format Response1",
+      "id": "a5d06b31-60b9-4438-aa4e-0f1651059281",
+      "name": "Extraer datos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4784,
-        16
+        -240,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}",
+        "options": {}
+      },
+      "id": "09c14c0e-f799-4eb9-b30a-625b38328de8",
+      "name": "Salida",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
       ]
     },
     {
@@ -195,140 +210,132 @@
             {
               "column": "recommendation",
               "value": "={{ $json.recommendation }}"
+            },
+            {
+              "column": "humidity",
+              "value": "={{ $json.humidity }}"
+            },
+            {
+              "column": "wind",
+              "value": "={{ $json.wind }}"
+            },
+            {
+              "column": "feels_like",
+              "value": "={{ $json.feels_like }}"
             }
           ]
         },
         "options": {}
       },
-      "id": "2d6a6663-df46-42c7-a5e8-84af1bc04e3d",
-      "name": "Insert History1",
+      "id": "4a089d9f-d50a-4516-82a9-42faebba2b69",
+      "name": "Guardar datos",
       "type": "n8n-nodes-base.mySql",
       "typeVersion": 2,
       "position": [
-        5024,
-        96
+        0,
+        224
       ],
       "credentials": {
         "mySql": {
-          "id": "6ecnfs6z2hMkVcsu",
+          "id": "HDqW2UUU8jXrUEZu",
           "name": "MySQL account"
         }
       }
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{$json}}",
-        "options": {}
-      },
-      "id": "6d932e01-0f48-4289-bcbd-79192d7d22b9",
-      "name": "Respond1",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [
-        5024,
-        -128
-      ]
     }
   ],
   "pinData": {},
   "connections": {
-    "Webhook1": {
+    "Inicio": {
       "main": [
         [
           {
-            "node": "Set City1",
+            "node": "Ciudad",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Set City1": {
+    "Buscar datos": {
       "main": [
         [
           {
-            "node": "Geocode City1",
+            "node": "Extraer coordenadas",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Geocode City1": {
+    "Extraer coordenadas": {
       "main": [
         [
           {
-            "node": "Extract Coordinates1",
+            "node": "Extraer datos de ciudad",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Extract Coordinates1": {
+    "Extraer datos de ciudad": {
       "main": [
         [
           {
-            "node": "Get Weather1",
+            "node": "Extraer datos especificos",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Get Weather1": {
+    "Ciudad": {
       "main": [
         [
           {
-            "node": "Prepare Weather Data1",
+            "node": "Buscar datos",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Prepare Weather Data1": {
+    "Extraer datos especificos": {
       "main": [
         [
           {
-            "node": "Message a model1",
+            "node": "Mensaje",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Message a model1": {
+    "Mensaje": {
       "main": [
         [
           {
-            "node": "Format Response1",
+            "node": "Extraer datos",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Format Response1": {
+    "Extraer datos": {
       "main": [
         [
           {
-            "node": "Insert History1",
+            "node": "Guardar datos",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Respond1",
+            "node": "Salida",
             "type": "main",
             "index": 0
           }
         ]
-      ]
-    },
-    "Insert History1": {
-      "main": [
-        []
       ]
     }
   },
@@ -338,11 +345,11 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "6b9e0e0b-00d5-4406-9a30-98187168a6f0",
+  "versionId": "d559ab3c-d13a-4cfb-a4b2-572ed4b05db3",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "e83248905f3deecb760e6a1e4226f3c6bf13385580086207435a3ebd79a87e29"
+    "instanceId": "13bcfbc5e9fb81b8ece2217ea7509d7664d808bb1a13a83fc55560fe0f4f2037"
   },
-  "id": "M8ZysVCX0FVSKpAD",
+  "id": "F7Z1fmA8credTEAg",
   "tags": []
 }

@@ -1,5 +1,5 @@
 ﻿# Proyecto_n8n_Tatiana_Bramdon
-Asistente inteligente que consulta el clima de una ciudad y genera recomendaciones de vestimenta segun las condiciones meteorologicas actuales. Utiliza n8n para la automatizacion de flujos, Open-Meteo para obtener datos en tiempo real, MySQL para almacenar consultas y MCP como servidor de herramientas (opcional).
+Asistente inteligente que consulta el clima de una ciudad y genera recomendaciones de vestimenta segun las condiciones meteorologicas actuales. Utiliza n8n para la automatizacion de flujos, Open-Meteo para obtener datos en tiempo real, MySQL para almacenar consultas y MCP como servidor de herramientas (opcional). El flujo devuelve ciudad, temperatura, humedad, viento, sensacion termica, condicion y recomendacion.
 
 ## Integrantes
 - Tatiana Villamizar
@@ -47,6 +47,25 @@ mvn spring-boot:run
 ## Frontend
 Abrir `frontend/index.html` en el navegador o servirlo con cualquier server estatico.
 
+## API Backend
+Endpoint: `POST http://localhost:3001/api/weather-outfit`
+Body:
+```json
+{ "city": "Bogota" }
+```
+Respuesta (ejemplo):
+```json
+{
+  "city": "Giron",
+  "temperature": 26.3,
+  "feels_like": 32.2,
+  "humidity": 83,
+  "wind": 3.7,
+  "condition": "Parcialmente nublado",
+  "recommendation": "..."
+}
+```
+
 ## n8n
 1. Inicia n8n en `http://localhost:5678`.
 2. Importa el workflow desde `docs/n8n-workflow.json`.
@@ -70,6 +89,9 @@ CREATE TABLE weather_queries (
     temperature DECIMAL(5,2) NOT NULL,
     `condition` VARCHAR(100) NOT NULL,
     recommendation TEXT,
+    humidity INT,
+    wind DECIMAL(5,2),
+    feels_like DECIMAL(5,2),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
