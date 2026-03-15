@@ -62,7 +62,13 @@ Respuesta (ejemplo):
   "humidity": 83,
   "wind": 3.7,
   "condition": "Parcialmente nublado",
-  "recommendation": "..."
+  "recommendation": "...",
+  "outfit": {
+    "top": "Camiseta ligera",
+    "bottom": "Shorts",
+    "shoes": "Sandalias",
+    "accessories": ["Sombrero", "Gafas de sol"]
+  }
 }
 ```
 
