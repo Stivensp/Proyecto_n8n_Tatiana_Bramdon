@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "ClimaStyle",
   "nodes": [
     {
@@ -148,66 +148,8 @@
       "typeVersion": 1,
       "position": [
         688,
-        32
+        160
       ]
-    },
-    {
-      "parameters": {
-        "table": {
-          "__rl": true,
-          "value": "weather_queries",
-          "mode": "list",
-          "cachedResultName": "weather_queries"
-        },
-        "dataMode": "defineBelow",
-        "valuesToSend": {
-          "values": [
-            {
-              "column": "city",
-              "value": "={{ $json.city }}"
-            },
-            {
-              "column": "temperature",
-              "value": "={{ $json.temperature }}"
-            },
-            {
-              "column": "condition",
-              "value": "={{ $json.condition }}"
-            },
-            {
-              "column": "recommendation",
-              "value": "={{ $json.recommendation }}"
-            },
-            {
-              "column": "humidity",
-              "value": "={{ $json.humidity }}"
-            },
-            {
-              "column": "wind",
-              "value": "={{ $json.wind }}"
-            },
-            {
-              "column": "feels_like",
-              "value": "={{ $json.feels_like }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "c3830407-b9be-4fdc-8043-af95358e7212",
-      "name": "Guardar datos",
-      "type": "n8n-nodes-base.mySql",
-      "typeVersion": 2,
-      "position": [
-        688,
-        256
-      ],
-      "credentials": {
-        "mySql": {
-          "id": "UCC5ZdMNrysjiL5t",
-          "name": "MySQL account"
-        }
-      }
     },
     {
       "parameters": {
@@ -338,11 +280,6 @@
       "main": [
         [
           {
-            "node": "Guardar datos",
-            "type": "main",
-            "index": 0
-          },
-          {
             "node": "Salida",
             "type": "main",
             "index": 0
@@ -357,7 +294,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "2fee8b8e-e42b-4531-b625-a9ec5b83da2d",
+  "versionId": "4c8c16e7-5294-406d-91d1-37f85acdce98",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "e35c02d2c33abcac0520b935d1c65b1bae283733abec64a98a3f64fbdf528a34"

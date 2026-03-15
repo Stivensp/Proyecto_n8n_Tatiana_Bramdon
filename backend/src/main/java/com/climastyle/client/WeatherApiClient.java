@@ -15,7 +15,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class N8nClient {
+public class WeatherApiClient {
 
   // Cliente HTTP usado para invocar el webhook de n8n.
   private final RestTemplate restTemplate;
@@ -23,7 +23,7 @@ public class N8nClient {
   private final String webhookTestUrl;
   private final ObjectMapper objectMapper;
 
-  public N8nClient(
+  public WeatherApiClient(
       RestTemplate restTemplate,
       ObjectMapper objectMapper,
       @Value("${app.n8n.webhook-url}") String webhookUrl,
@@ -34,6 +34,7 @@ public class N8nClient {
     this.webhookTestUrl = webhookTestUrl;
   }
 
+  // Llama a n8n y devuelve el DTO ya mapeado.
   public WeatherResponseDTO requestWeather(WeatherRequestDTO request) {
     // Primero intenta el webhook principal y, si no existe, usa el de prueba.
     HttpEntity<WeatherRequestDTO> entity = buildEntity(request);
@@ -67,6 +68,7 @@ public class N8nClient {
     return mapped;
   }
 
+  // Reintento simple para errores temporales de red.
   private WeatherResponseDTO postWithRetry(String url, HttpEntity<WeatherRequestDTO> entity, int maxAttempts) {
     RestClientException lastError = null;
     for (int attempt = 1; attempt <= maxAttempts; attempt++) {
