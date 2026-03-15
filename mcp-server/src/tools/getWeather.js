@@ -3,6 +3,7 @@ import fetch from "node-fetch";
 const GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search";
 const WEATHER_URL = "https://api.open-meteo.com/v1/forecast";
 
+// Mapea codigos del clima de Open-Meteo a texto legible.
 function mapWeatherCode(code) {
   if (code === 0) return "despejado";
   if (code >= 1 && code <= 3) return "parcialmente nublado";
@@ -16,6 +17,7 @@ function mapWeatherCode(code) {
   return "condicion desconocida";
 }
 
+// Obtiene temperatura y condicion actual para una ciudad.
 export async function getWeather(city) {
   if (!city) {
     throw new Error("city is required");

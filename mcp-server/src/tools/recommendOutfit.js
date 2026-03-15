@@ -1,3 +1,4 @@
+// Regla simple para recomendar outfit basado en temperatura y condicion.
 export function recommendOutfit(temperature, condition) {
   if (temperature === null || temperature === undefined) {
     throw new Error("temperature is required");

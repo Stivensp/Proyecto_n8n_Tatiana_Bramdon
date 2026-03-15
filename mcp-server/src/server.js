@@ -3,14 +3,17 @@ import cors from "cors";
 import { getWeather } from "./tools/getWeather.js";
 import { recommendOutfit } from "./tools/recommendOutfit.js";
 
+// Servidor MCP expone herramientas HTTP consumibles por el backend o clientes.
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Healthcheck simple para validar disponibilidad.
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
+// Herramienta: obtiene clima basico para una ciudad.
 app.post("/tool/get_weather", async (req, res) => {
   try {
     const { city } = req.body || {};
@@ -21,6 +24,7 @@ app.post("/tool/get_weather", async (req, res) => {
   }
 });
 
+// Herramienta: recomienda outfit simple basado en temperatura/condicion.
 app.post("/tool/recommend_outfit", (req, res) => {
   try {
     const { temperature, condition } = req.body || {};

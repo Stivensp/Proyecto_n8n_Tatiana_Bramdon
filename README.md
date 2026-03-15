@@ -37,6 +37,7 @@ cd mcp-server
 npm install
 npm start
 ```
+Endpoints documentados en `docs/mcp-server.md`.
 
 ## Backend
 ```
@@ -75,8 +76,7 @@ Respuesta (ejemplo):
 ## n8n
 1. Inicia n8n en `http://localhost:5678`.
 2. Importa el workflow desde `docs/n8n-workflow.json`.
-3. Configura las credenciales de MySQL en el nodo MySQL.
-4. Activa el workflow.
+3. Activa el workflow.
 
 ## Instrucciones para configurar el workflow completo de n8n con MySQL
 1. Preparar el entorno. Instala Docker y Docker Compose.
@@ -102,9 +102,9 @@ CREATE TABLE weather_queries (
 );
 ```
 
-9. Levanta n8n conectado a MySQL:
+9. Levanta n8n:
 ```
-docker run -d --name n8n_prod --network n8n-network -p 5678:5678 -e DB_TYPE=mysql -e DB_MYSQLDB=weatherdb -e DB_MYSQLUSER=root -e DB_MYSQLPASSWORD=admin -e DB_MYSQLHOST=mysql_container -e N8N_BASIC_AUTH_ACTIVE=true -e N8N_BASIC_AUTH_USER=admin -e N8N_BASIC_AUTH_PASSWORD=admin123 n8nio/n8n
+docker run -d --name n8n_prod --network n8n-network -p 5678:5678 -e N8N_BASIC_AUTH_ACTIVE=true -e N8N_BASIC_AUTH_USER=admin -e N8N_BASIC_AUTH_PASSWORD=admin123 n8nio/n8n
 ```
 
 Panel: `http://localhost:5678`
@@ -126,4 +126,10 @@ curl -X POST http://localhost:5678/webhook/weather -H "Content-Type: application
 16. Iniciar: `docker start mysql_container n8n_prod`.
 
 ## Flujo
-Frontend -> Backend -> n8n -> Open-Meteo + MySQL -> Backend -> Frontend
+Frontend -> Backend -> n8n -> Open-Meteo -> Backend -> MySQL -> Frontend
+
+## Documentacion tecnica
+- `docs/architecture.md`
+- `docs/api-spec.md`
+- `docs/system-design.md`
+- `docs/mcp-server.md`
