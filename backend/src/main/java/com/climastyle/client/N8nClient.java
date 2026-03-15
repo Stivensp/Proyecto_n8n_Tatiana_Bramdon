@@ -11,11 +11,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
 public class N8nClient {
 
+  // Cliente HTTP usado para invocar el webhook de n8n.
   private final RestTemplate restTemplate;
   private final String webhookUrl;
   private final String webhookTestUrl;
@@ -33,12 +35,13 @@ public class N8nClient {
   }
 
   public WeatherResponseDTO requestWeather(WeatherRequestDTO request) {
+    // Primero intenta el webhook principal y, si no existe, usa el de prueba.
     HttpEntity<WeatherRequestDTO> entity = buildEntity(request);
 
     try {
-      return postForWeather(webhookUrl, entity);
+      return postWithRetry(webhookUrl, entity, 2);
     } catch (HttpClientErrorException.NotFound notFound) {
-      return postForWeather(webhookTestUrl, entity);
+      return postWithRetry(webhookTestUrl, entity, 2);
     }
   }
 
@@ -49,6 +52,7 @@ public class N8nClient {
   }
 
   private WeatherResponseDTO postForWeather(String url, HttpEntity<WeatherRequestDTO> entity) {
+    // Llama al webhook de n8n y mapea la respuesta JSON al DTO.
     ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
     if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
@@ -63,7 +67,29 @@ public class N8nClient {
     return mapped;
   }
 
+  private WeatherResponseDTO postWithRetry(String url, HttpEntity<WeatherRequestDTO> entity, int maxAttempts) {
+    RestClientException lastError = null;
+    for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        return postForWeather(url, entity);
+      } catch (RestClientException ex) {
+        lastError = ex;
+        try {
+          Thread.sleep(300L * attempt);
+        } catch (InterruptedException interrupted) {
+          Thread.currentThread().interrupt();
+          break;
+        }
+      }
+    }
+    if (lastError != null) {
+      throw lastError;
+    }
+    throw new IllegalStateException("Failed to get response from n8n webhook");
+  }
+
   private WeatherResponseDTO mapResponse(String body) {
+    // Soporta respuesta como array o como objeto unico.
     try {
       JsonNode node = objectMapper.readTree(body);
       if (node.isArray() && node.size() > 0) {
@@ -78,3 +104,4 @@ public class N8nClient {
     }
   }
 }
+

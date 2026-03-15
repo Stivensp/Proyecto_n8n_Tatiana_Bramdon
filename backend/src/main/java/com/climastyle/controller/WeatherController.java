@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*")
 public class WeatherController {
 
+  // Flujo principal (orden): Controller -> Service -> n8n -> respuesta al Frontend.
   private final WeatherService weatherService;
 
   public WeatherController(WeatherService weatherService) {
@@ -25,7 +26,11 @@ public class WeatherController {
   @PostMapping("/weather-outfit")
   public ResponseEntity<WeatherResponseDTO> getWeatherOutfit(
       @Valid @RequestBody WeatherRequestDTO request) {
+    // 1) Recibe la ciudad desde el frontend.
+    // 2) Delegar al servicio para consultar n8n.
     WeatherResponseDTO response = weatherService.getWeatherAndRecommendation(request.getCity());
+    // 3) Responde al frontend con los datos del clima + recomendacion.
     return ResponseEntity.ok(response);
   }
 }
+

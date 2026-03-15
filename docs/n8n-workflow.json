@@ -8,13 +8,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "924382c9-1ff3-4b15-911c-1ef05ee02295",
+      "id": "15cc6dae-48df-49f4-b9bd-857ffc1453c7",
       "name": "Inicio",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        -1840,
-        144
+        -928,
+        176
       ],
       "webhookId": "17ed432a-12f1-44fc-aafd-bd0212b044ec"
     },
@@ -32,26 +32,26 @@
         },
         "options": {}
       },
-      "id": "beaaba27-a171-447a-abcf-7e4d29006098",
+      "id": "7ef835aa-a692-487f-9172-ae34b9326e17",
       "name": "Buscar datos",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        -1440,
-        144
+        -592,
+        176
       ]
     },
     {
       "parameters": {
         "jsCode": "const result = $json.results[0];\nreturn [{ json: { city: result.name, latitude: result.latitude, longitude: result.longitude } }];"
       },
-      "id": "78a9e7e2-6de2-4503-917b-685d2635c8b8",
+      "id": "5a644f16-4b0a-4d6b-9d34-a68a4905b1b2",
       "name": "Extraer coordenadas",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1232,
-        144
+        -208,
+        160
       ]
     },
     {
@@ -80,13 +80,13 @@
         },
         "options": {}
       },
-      "id": "60072354-607b-4e47-be50-ce51ede0fd2d",
+      "id": "cda5b3f4-f152-4445-abd9-4bbcb9c760da",
       "name": "Extraer datos de ciudad",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        -1040,
-        144
+        -16,
+        160
       ]
     },
     {
@@ -101,72 +101,39 @@
         },
         "options": {}
       },
-      "id": "aa93c74f-8268-46ef-84d0-a8715d828e0b",
+      "id": "e7be58d9-6f2f-44f8-9468-49952b951772",
       "name": "Ciudad",
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
       "position": [
-        -1632,
-        144
+        -784,
+        176
       ]
     },
     {
       "parameters": {
-        "jsCode": "const current = $json.current;\n\nconst temperature = current.temperature_2m;\nconst humidity = current.relative_humidity_2m;\nconst wind = current.wind_speed_10m;\nconst feelsLike = current.apparent_temperature;\nconst code = current.weather_code;\n\nconst city = $items(\"Extraer coordenadas\")[0].json.city;\n\nlet condition = \"Desconocido\";\nlet recommendation = \"\";\n\n// Condición del clima\nif (code === 0) {\n  condition = \"Cielo despejado\";\n}\nelse if (code >= 1 && code <= 3) {\n  condition = \"Parcialmente nublado\";\n}\nelse if (code >= 45 && code <= 48) {\n  condition = \"Niebla\";\n}\nelse if (code >= 51 && code <= 67) {\n  condition = \"Lluvia ligera\";\n}\nelse if (code >= 71 && code <= 77) {\n  condition = \"Nieve\";\n}\nelse if (code >= 80 && code <= 82) {\n  condition = \"Chubascos\";\n}\nelse if (code >= 95) {\n  condition = \"Tormenta eléctrica\";\n}\n\n// Recomendación basada en sensación térmica\nif (feelsLike >= 30) {\n  recommendation = \"Hace bastante calor. Usa ropa ligera y mantente hidratado.\";\n}\nelse if (feelsLike >= 24) {\n  recommendation = \"Clima cálido. Ropa fresca es recomendable.\";\n}\nelse if (feelsLike >= 18) {\n  recommendation = \"Temperatura agradable.\";\n}\nelse {\n  recommendation = \"Podrías necesitar una chaqueta ligera.\";\n}\n\n// Ajuste si llueve\nif (code >= 51 && code <= 82) {\n  recommendation += \" También es recomendable llevar paraguas.\";\n}\n\nreturn [\n  {\n    json: {\n      city: city,\n      temperature: temperature,\n      humidity: humidity,\n      wind: wind,\n      feels_like: feelsLike,\n      condition: condition,\n      recommendation: recommendation\n    }\n  }\n];"
+        "jsCode": "const current = $json.current;\n\nconst temperature = current.temperature_2m;\nconst humidity = current.relative_humidity_2m;\nconst wind = current.wind_speed_10m;\nconst feelsLike = current.apparent_temperature;\nconst code = current.weather_code;\n\nconst city = $items(\"Extraer coordenadas\")[0].json.city;\n\nlet condition = \"Desconocido\";\nlet recommendationText = \"\";\nlet outfit = {\n  top: \"\",\n  bottom: \"\",\n  shoes: \"\",\n  accessories: []\n};\n\n// Determinar la condición del clima\nif (code === 0) condition = \"Cielo despejado\";\nelse if (code >= 1 && code <= 3) condition = \"Parcialmente nublado\";\nelse if (code >= 45 && code <= 48) condition = \"Niebla\";\nelse if (code >= 51 && code <= 67) condition = \"Lluvia ligera\";\nelse if (code >= 71 && code <= 77) condition = \"Nieve\";\nelse if (code >= 80 && code <= 82) condition = \"Chubascos\";\nelse if (code >= 95) condition = \"Tormenta eléctrica\";\n\n// Recomendación basada en sensación térmica y clima\nif (feelsLike >= 30) {\n  outfit.top = \"Camiseta ligera 👕\";\n  outfit.bottom = \"Shorts 🩳\";\n  outfit.shoes = \"Sandalias frescas 🥿\";\n  outfit.accessories.push(\"Sombrero divertido 🧢\", \"Gafas de sol 😎\");\n  recommendationText = `¡Hace calor! 🔥 Ponte camisetas ligeras y shorts cómodos, y no olvides tu sombrero o gafas de sol para brillar bajo el sol 🌞.`;\n}\nelse if (feelsLike >= 24) {\n  outfit.top = \"Camiseta ligera 👕\";\n  outfit.bottom = \"Pantalón cómodo 🩳\";\n  outfit.shoes = \"Zapatos ligeros 👟\";\n  outfit.accessories.push(\"Sombrero 🧢\", \"Gafas de sol 😎\");\n  recommendationText = `Clima cálido y agradable 😎. Una camiseta fresca y pantalón cómodo te harán sentir genial. Sombrero y gafas de sol para el toque cool 🌞.`;\n}\nelse if (feelsLike >= 18) {\n  outfit.top = \"Camiseta o camisa ligera 👕\";\n  outfit.bottom = \"Pantalón ligero 👖\";\n  outfit.shoes = \"Zapatos cómodos 👟\";\n  outfit.accessories.push(\"Sombrero 🧢\");\n  recommendationText = `¡Temperatura agradable! 🌤️ Camiseta y pantalón ligero son ideales. Añade un sombrero divertido para protegerte del sol 😎.`;\n}\nelse if (feelsLike >= 10) {\n  outfit.top = \"Suéter o chaqueta ligera 🧥\";\n  outfit.bottom = \"Pantalones largos 👖\";\n  outfit.shoes = \"Zapatos cerrados o botas 👢\";\n  outfit.accessories.push(\"Bufanda opcional 🧣\");\n  recommendationText = `Hace fresquito 🧡. Ponte tu suéter o chaqueta ligera y pantalones largos para sentirte cómodo. Una bufanda opcional le da un toque acogedor 🧣.`;\n}\nelse { // muy frío, posible nieve\n  outfit.top = \"Abrigo grueso o parka 🧥\";\n  outfit.bottom = \"Pantalones térmicos o jeans gruesos 👖\";\n  outfit.shoes = \"Botas impermeables 👢\";\n  outfit.accessories.push(\"Bufanda 🧣\", \"Guantes 🧤\", \"Gorro 🧢\");\n  recommendationText = `¡Hace mucho frío! ❄️ Usa abrigo grueso, pantalones térmicos y botas impermeables. No olvides bufanda, guantes y gorro para mantenerte caliente y seguro en la nieve ⛄.`;\n}\n\n// Ajustes por lluvia/chubascos\nif (code >= 51 && code <= 82) {\n  outfit.accessories.push(\"Paraguas o impermeable 🌂\");\n  recommendationText += \" No olvides tu paraguas o impermeable, ¡no queremos sorpresas mojadas!\";\n}\n\n// Ajustes por tormenta eléctrica\nif (code >= 95) {\n  outfit.accessories.push(\"Abrigo resistente a lluvia ⚡\");\n  recommendationText += \" Mantente seguro durante la tormenta y evita lugares expuestos.\";\n}\n\n// Ajustes por viento fuerte\nif (wind >= 10) {\n  outfit.accessories.push(\"Chaqueta cortavientos 💨\");\n  recommendationText += \" Una chaqueta cortavientos puede salvarte de los empujones del viento!\";\n}\n\n// Salida JSON final\nreturn [\n  {\n    json: {\n      city: city,\n      temperature: temperature,\n      humidity: humidity,\n      wind: wind,\n      feels_like: feelsLike,\n      condition: condition,\n      recommendation: recommendationText,\n      outfit: outfit // desglose completo de prendas y accesorios\n    }\n  }\n];"
       },
-      "id": "fadf547d-e085-4979-b3b2-8888501f6153",
+      "id": "4bd79b58-3a0c-4159-9871-e705475978fc",
       "name": "Extraer datos especificos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -832,
-        144
+        192,
+        160
       ]
     },
     {
       "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "models/gemini-2.5-flash-lite",
-          "mode": "list",
-          "cachedResultName": "models/gemini-2.5-flash-lite"
-        },
-        "messages": {
-          "values": [
-            {
-              "content": "=En un mensaje corto recomienda ropa según el clima. Sé amigable, divertido y claro.\n\nCiudad: {{$json.city}}\nTemperatura: {{$json.temperature}}°C\nSensación térmica: {{$json.feels_like}}°C\nHumedad: {{$json.humidity}}%\nViento: {{$json.wind}} km/h\nCondición del clima: {{$json.condition}}\n"
-            }
-          ]
-        },
-        "builtInTools": {},
-        "options": {}
+        "jsCode": "// Extrae la recomendación directamente desde 'recommendation' o usa fallback\nconst rec = $input.first().json.recommendation || \"Sin recomendación\";\n\n// Extraemos los datos del clima\nconst data = $items('Extraer datos especificos')[0].json;\n\n// Devolvemos todo en un solo objeto JSON, incluyendo desglose del outfit\nreturn [{\n  json: {\n    city: data.city,\n    temperature: data.temperature,\n    feels_like: data.feels_like,\n    humidity: data.humidity,\n    wind: data.wind,\n    condition: data.condition,\n    recommendation: rec.trim(),\n    outfit: data.outfit || {} // incluye top, bottom, shoes y accessories si existen\n  }\n}];"
       },
-      "type": "@n8n/n8n-nodes-langchain.googleGemini",
-      "typeVersion": 1.1,
-      "position": [
-        -624,
-        144
-      ],
-      "id": "85628ca2-de83-4783-bbde-725ba1c0ef59",
-      "name": "Mensaje",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "TGHp0xt6ggmaPb6t",
-          "name": "Google Gemini(PaLM) Api account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const rec =\n$json.candidates?.[0]?.content?.parts?.[0]?.text ||\n$json.content?.parts?.[0]?.text ||\n$json.text ||\n\"Sin recomendación\";\n\nconst data = $items('Extraer datos especificos')[0].json;\n\nreturn [{\n  json: {\n    city: data.city,\n    temperature: data.temperature,\n    feels_like: data.feels_like,\n    humidity: data.humidity,\n    wind: data.wind,\n    condition: data.condition,\n    recommendation: rec\n  }\n}];"
-      },
-      "id": "a5d06b31-60b9-4438-aa4e-0f1651059281",
+      "id": "3fbdb5d9-9932-479b-b1e7-375057087cc7",
       "name": "Extraer datos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -240,
-        144
+        432,
+        160
       ]
     },
     {
@@ -175,13 +142,13 @@
         "responseBody": "={{$json}}",
         "options": {}
       },
-      "id": "09c14c0e-f799-4eb9-b30a-625b38328de8",
+      "id": "c564dd90-e5fd-4657-8a2f-ee5505c355ec",
       "name": "Salida",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        688,
+        32
       ]
     },
     {
@@ -227,20 +194,58 @@
         },
         "options": {}
       },
-      "id": "4a089d9f-d50a-4516-82a9-42faebba2b69",
+      "id": "c3830407-b9be-4fdc-8043-af95358e7212",
       "name": "Guardar datos",
       "type": "n8n-nodes-base.mySql",
       "typeVersion": 2,
       "position": [
-        0,
-        224
+        688,
+        256
       ],
       "credentials": {
         "mySql": {
-          "id": "HDqW2UUU8jXrUEZu",
+          "id": "UCC5ZdMNrysjiL5t",
           "name": "MySQL account"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.results && $json.results.length > 0 }}",
+              "operation": "isTrue"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2cb4232f-0945-4ac1-888f-2201f4dbd96d",
+      "name": "Ciudad encontrada",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -416,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { message: 'Ciudad no encontrada' } }}",
+        "options": {
+          "responseCode": 404
+        }
+      },
+      "id": "ba4db282-bdf8-4763-8f41-75e044d8d753",
+      "name": "Salida error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        352
+      ]
     }
   ],
   "pinData": {},
@@ -260,7 +265,25 @@
       "main": [
         [
           {
+            "node": "Ciudad encontrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ciudad encontrada": {
+      "main": [
+        [
+          {
             "node": "Extraer coordenadas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Salida error",
             "type": "main",
             "index": 0
           }
@@ -304,17 +327,6 @@
       "main": [
         [
           {
-            "node": "Mensaje",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Mensaje": {
-      "main": [
-        [
-          {
             "node": "Extraer datos",
             "type": "main",
             "index": 0
@@ -339,17 +351,17 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "d559ab3c-d13a-4cfb-a4b2-572ed4b05db3",
+  "versionId": "2fee8b8e-e42b-4531-b625-a9ec5b83da2d",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "13bcfbc5e9fb81b8ece2217ea7509d7664d808bb1a13a83fc55560fe0f4f2037"
+    "instanceId": "e35c02d2c33abcac0520b935d1c65b1bae283733abec64a98a3f64fbdf528a34"
   },
-  "id": "F7Z1fmA8credTEAg",
+  "id": "8PsVI5Qo6gQFU5z0",
   "tags": []
 }

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public class WeatherRequestDTO {
 
+  // Ciudad solicitada por el frontend.
   @NotBlank(message = "city is required")
   private String city;
 

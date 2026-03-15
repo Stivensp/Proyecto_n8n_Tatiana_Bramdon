@@ -1,9 +1,11 @@
 package com.climastyle.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Map;
 
 public class WeatherResponseDTO {
 
+  // Datos devueltos por n8n al backend y luego al frontend.
   private String city;
   private Double temperature;
   private Double feelsLike;
@@ -11,6 +13,7 @@ public class WeatherResponseDTO {
   private Double wind;
   private String condition;
   private String recommendation;
+  private Map<String, Object> outfit;
 
   public WeatherResponseDTO() {}
 
@@ -81,5 +84,13 @@ public class WeatherResponseDTO {
 
   public void setRecommendation(String recommendation) {
     this.recommendation = recommendation;
+  }
+
+  public Map<String, Object> getOutfit() {
+    return outfit;
+  }
+
+  public void setOutfit(Map<String, Object> outfit) {
+    this.outfit = outfit;
   }
 }
