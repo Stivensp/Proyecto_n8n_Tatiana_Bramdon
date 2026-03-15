@@ -180,6 +180,11 @@ gap:20px;
 
 }
 
+/* Outfit full width like history */
+.outfit-card{
+grid-column:1 / -1;
+}
+
 /* TARJETAS */
 
 .card{
@@ -328,6 +333,56 @@ font-size:0.8em;
 
 .recommendation strong{
 color:#ffffff;
+}
+
+/* OUTFIT */
+
+.outfit-grid{
+display:grid;
+grid-template-columns:repeat(2, minmax(0, 1fr));
+gap:12px;
+}
+
+.outfit-item{
+background:#f8fafc;
+border:1px solid var(--border);
+border-radius:12px;
+padding:12px;
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+
+.outfit-label{
+font-size:12px;
+color:var(--muted);
+}
+
+.outfit-value{
+font-size:15px;
+}
+
+.outfit-accessories{
+grid-column:1 / -1;
+}
+
+.outfit-list{
+list-style:none;
+padding:0;
+margin:0;
+display:grid;
+gap:6px;
+}
+
+.outfit-list li{
+background:#eef2ff;
+border:1px solid #dbeafe;
+border-radius:999px;
+padding:6px 10px;
+font-size:12px;
+display:inline-flex;
+align-items:center;
+gap:6px;
 }
 
 /* HISTORIAL */
